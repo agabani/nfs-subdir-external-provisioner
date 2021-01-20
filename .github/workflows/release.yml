@@ -23,21 +23,21 @@ jobs:
                MINOR="${BASH_REMATCH[2]}"
                PATCH="${BASH_REMATCH[3]}"
 
-               TAGS="${{ secrets.DOCKER_IMAGE }}:latest"
-               TAGS="${TAGS},${{ secrets.DOCKER_IMAGE }}:${MAJOR}"
-               TAGS="${TAGS},${{ secrets.DOCKER_IMAGE }}:${MAJOR}.${MINOR}"
-               TAGS="${TAGS},${{ secrets.DOCKER_IMAGE }}:${MAJOR}.${MINOR}.${PATCH}"
+               TAGS="agabani/nfs-subdir-external-provisioner:latest"
+               TAGS="${TAGS},agabani/nfs-subdir-external-provisioner:${MAJOR}"
+               TAGS="${TAGS},agabani/nfs-subdir-external-provisioner:${MAJOR}.${MINOR}"
+               TAGS="${TAGS},agabani/nfs-subdir-external-provisioner:${MAJOR}.${MINOR}.${PATCH}"
             else
-               TAGS="${{ secrets.DOCKER_IMAGE }}:${VERSION}"
+               TAGS="agabani/nfs-subdir-external-provisioner:${VERSION}"
             fi
           elif [[ $GITHUB_REF == refs/heads/* ]]; then
             VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
             if [ "${{ github.event.repository.default_branch }}" = "$VERSION" ]; then
               VERSION=edge
             fi
-            TAGS="${{ secrets.DOCKER_IMAGE }}:${VERSION}"
+            TAGS="agabani/nfs-subdir-external-provisioner:${VERSION}"
           elif [[ $GITHUB_REF == refs/pull/* ]]; then
-            TAGS="${{ secrets.DOCKER_IMAGE }}:pr-${{ github.event.number }}"
+            TAGS="agabani/nfs-subdir-external-provisioner:pr-${{ github.event.number }}"
           fi
           echo ::set-output name=tags::${TAGS}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
@@ -52,8 +52,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
-          registry: ${{ secrets.REGISTRY_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
+          username: agabani
           password: ${{ secrets.REGISTRY_TOKEN }}
       -
         name: Build and push
